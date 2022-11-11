@@ -5,9 +5,38 @@ import 'flatpickr/dist/flatpickr.min.css';
 const refs = {
   inputSetCountingTime: document.querySelector('#datetime-picker'),
   btnStartCountingTime: document.querySelector('[data-start]'),
+  days: document.querySelector('[data-days]'),
+  hours: document.querySelector('[data-hours]'),
+  minutes: document.querySelector('[data-minutes]'),
+  seconds: document.querySelector('[data-seconds]'),
 };
-refs.btnStartCountingTime.addEventListener('click', onBtnStartTarget);
 setAttributeDisabledOnBtn(refs.btnStartCountingTime);
+refs.btnStartCountingTime.addEventListener('click', onBtnStartTarget);
+let selectedDate = {};
+
+function onBtnStartTarget() {
+  setAttributeDisabledOnBtn(refs.btnStartCountingTime);
+  setAttributeDisabledOnBtn(refs.inputSetCountingTime);
+
+  const timeId = setInterval(() => {
+    const convertingDate = convertMs(selectedDate - new Date());
+    refs.days.textContent = pad(convertingDate.days);
+    refs.hours.textContent = pad(convertingDate.hours);
+    refs.minutes.textContent = pad(convertingDate.minutes);
+    refs.seconds.textContent = pad(convertingDate.seconds);
+
+    console.log(convertingDate);
+    if (
+      refs.seconds.textContent === '00' &&
+      refs.hours.textContent === '00' &&
+      refs.minutes.textContent === '00' &&
+      refs.seconds.textContent === '00'
+    ) {
+      clearInterval(timeId);
+    }
+  }, 1000);
+}
+
 const options = {
   enableTime: true,
   time_24hr: true,
@@ -15,9 +44,9 @@ const options = {
   minuteIncrement: 1,
 
   onClose(selectedDates) {
-    console.log(selectedDates[0]);
     if (selectedDates[0] > new Date()) {
       removeAttributeDisabledOnBtn(refs.btnStartCountingTime);
+      return (selectedDate = selectedDates[0]);
     } else if (selectedDates[0] < new Date()) {
       window.alert('Please choose a date in the future');
       setAttributeDisabledOnBtn(refs.btnStartCountingTime);
@@ -51,10 +80,6 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 
-console.log(convertMs(2000)); // {days: 0, hours: 0, minutes: 0, seconds: 2}
-console.log(convertMs(140000)); // {days: 0, hours: 0, minutes: 2, seconds: 20}
-console.log(convertMs(24140000)); // {days: 0, hours: 6 minutes: 42, seconds: 20}
-
-function onBtnStartTarget() {
-  console.log(convertMs());
+function pad(value) {
+  return String(value).padStart(2, '0');
 }
