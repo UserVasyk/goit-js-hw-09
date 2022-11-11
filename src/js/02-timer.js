@@ -1,7 +1,6 @@
 import flatpickr from 'flatpickr';
-
 import 'flatpickr/dist/flatpickr.min.css';
-
+import Notiflix from 'notiflix';
 const refs = {
   inputSetCountingTime: document.querySelector('#datetime-picker'),
   btnStartCountingTime: document.querySelector('[data-start]'),
@@ -14,29 +13,6 @@ setAttributeDisabledOnBtn(refs.btnStartCountingTime);
 refs.btnStartCountingTime.addEventListener('click', onBtnStartTarget);
 let selectedDate = {};
 
-function onBtnStartTarget() {
-  setAttributeDisabledOnBtn(refs.btnStartCountingTime);
-  setAttributeDisabledOnBtn(refs.inputSetCountingTime);
-
-  const timeId = setInterval(() => {
-    const convertingDate = convertMs(selectedDate - new Date());
-    refs.days.textContent = pad(convertingDate.days);
-    refs.hours.textContent = pad(convertingDate.hours);
-    refs.minutes.textContent = pad(convertingDate.minutes);
-    refs.seconds.textContent = pad(convertingDate.seconds);
-
-    console.log(convertingDate);
-    if (
-      refs.seconds.textContent === '00' &&
-      refs.hours.textContent === '00' &&
-      refs.minutes.textContent === '00' &&
-      refs.seconds.textContent === '00'
-    ) {
-      clearInterval(timeId);
-    }
-  }, 1000);
-}
-
 const options = {
   enableTime: true,
   time_24hr: true,
@@ -48,12 +24,42 @@ const options = {
       removeAttributeDisabledOnBtn(refs.btnStartCountingTime);
       return (selectedDate = selectedDates[0]);
     } else if (selectedDates[0] < new Date()) {
-      window.alert('Please choose a date in the future');
+      Notiflix.Notify.failure('Please choose a date in the future', {
+        timeout: 3000,
+        clickToClose: true,
+        position: 'center-top',
+      });
+
       setAttributeDisabledOnBtn(refs.btnStartCountingTime);
     }
   },
 };
 flatpickr(refs.inputSetCountingTime, options);
+function onBtnStartTarget() {
+  setAttributeDisabledOnBtn(refs.btnStartCountingTime);
+  setAttributeDisabledOnBtn(refs.inputSetCountingTime);
+
+  const timeId = setInterval(() => {
+    const convertingDate = convertMs(selectedDate - new Date());
+    refs.days.textContent = pad(convertingDate.days);
+    refs.hours.textContent = pad(convertingDate.hours);
+    refs.minutes.textContent = pad(convertingDate.minutes);
+    refs.seconds.textContent = pad(convertingDate.seconds);
+
+    if (
+      refs.seconds.textContent === '00' &&
+      refs.hours.textContent === '00' &&
+      refs.minutes.textContent === '00' &&
+      refs.seconds.textContent === '00'
+    ) {
+      clearInterval(timeId);
+      Notiflix.Notify.success('Timer is over!', {
+        timeout: 5000,
+        position: 'center-top',
+      });
+    }
+  }, 1000);
+}
 function setAttributeDisabledOnBtn(button) {
   button.setAttribute('disabled', '');
 }
