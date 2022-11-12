@@ -10,7 +10,7 @@ const refs = {
 let firstDelayValue = 0;
 let delayStepValue = 0;
 let amountValue = 0;
-
+let timeId = null;
 refs.firstDelayInput.addEventListener(
   'input',
   evt => (firstDelayValue = evt.currentTarget.value)
@@ -31,7 +31,7 @@ function onSumbitBtnTarget(evt) {
 
   for (let i = 0; i < amountValue; i++) {
     const delay = Number(firstDelayValue) + delayStepValue * i;
-    timeid = setTimeout(() => {
+    timeId = setTimeout(() => {
       createPromise(i + 1, delay)
         .then(messageSuccess =>
           Notiflix.Notify.success(messageSuccess, {
