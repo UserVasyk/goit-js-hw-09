@@ -12,7 +12,7 @@ const refs = {
 setAttributeDisabledOnBtn(refs.btnStartCountingTime);
 refs.btnStartCountingTime.addEventListener('click', onBtnStartTarget);
 let selectedDate = {};
-
+let timeId = null;
 const options = {
   enableTime: true,
   time_24hr: true,
@@ -39,7 +39,7 @@ function onBtnStartTarget() {
   setAttributeDisabledOnBtn(refs.btnStartCountingTime);
   setAttributeDisabledOnBtn(refs.inputSetCountingTime);
 
-  const timeId = setInterval(() => {
+  timeId = setInterval(() => {
     const convertingDate = convertMs(selectedDate - new Date());
     refs.days.textContent = pad(convertingDate.days);
     refs.hours.textContent = pad(convertingDate.hours);
